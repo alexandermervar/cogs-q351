@@ -16,8 +16,15 @@ import math
 # Objectives:
 # (1) Write a recursive function to compute the nth fibonacci number
 
+# fib: Number -> Number
+# Returns the nth fibonacci number.
 def fib(n):
-    raise NotImplementedError
+    if n == 0:
+        return 0
+    elif n == 1:
+        return 1
+    else:
+        return fib(n-1) + fib(n-2)
 
 
 
@@ -27,8 +34,14 @@ def fib(n):
 # Objectives:
 # (1) Write a function which returns a tuple of the first and last items in a given sequence
 
+# firstLast: List -> Tuple
+# Returns a tuple of the first and last items in a given sequence. 
+# If given one item, a tuple of only one item should be returned.
 def firstLast(seq):
-    raise NotImplementedError
+    if len(seq) == 1:
+        return (seq[0],)
+    else:
+        return (seq[0], seq[-1])
 
 
 
@@ -54,9 +67,13 @@ exampleTree = Node(1,[Node(2,[]),Node(3,[Node(4,[Node(5,[]),Node(6,[Node(7,[])])
 # Objectives:
 # (1) Write a function to calculate the sum of every node in a tree (recursively)
 
+# recSumNodes: Node -> Number
+# Returns the sum of every node in a tree (recursively).
 def recSumNodes(root):
-    raise NotImplementedError
-
+    if root.subnodes == []:
+        return root.value
+    else:
+        return root.value + sum(recSumNodes(subnode) for subnode in root.subnodes)
 
 
 
@@ -68,9 +85,16 @@ def recSumNodes(root):
 # Objectives:
 # (1) Write a function to calculate the sum of every node in a tree (iteratively)
 
+# iterSumNodes: Node -> Number
+# Returns the sum of every node in a tree (iteratively).
 def iterSumNodes(root):
-    raise NotImplementedError
-
+    total = 0
+    tree = [root]
+    while tree != []:
+        node = tree.pop()
+        total += node.value
+        tree.extend(node.subnodes)
+    return total
 
 
 
@@ -82,8 +106,10 @@ def iterSumNodes(root):
 # (1) Write a function compose, which takes an inner and outer function
 # and returns a new function applying the inner then the outer function to a value
 
+# compose: (a -> b) -> (b -> c) -> a -> c
+# Returns a new function applying the inner then the outer function to a value.
 def compose(f_outer, f_inner):
-    raise NotImplementedError
+    return lambda x: f_outer(f_inner(x))
 
 
 
@@ -96,8 +122,12 @@ def compose(f_outer, f_inner):
 # (1) Write a yieldTwice function, which takes any iterable (like a list, generator, etc) and yields each element of the iterable twice.
 #     For example, yieldTwice([1, 2, 3]) => 1, 1, 2, 2, 3, 3
 
+# yieldTwice: Iterable -> Iterable
+# Returns an iterable of every element of the iterable twice.
 def yieldTwice(iterable):
-    raise NotImplementedError
+    for item in iterable:
+        yield item
+        yield item
 
 
 
@@ -125,8 +155,16 @@ def toHex(value, minbytes=0, maxbytes=-1):
 # (1) Write a function valid, which takes an iterable and a black-box function and yields the returned value for any valid inputs while ignoring any that raise a ValueError. Do not handle any other exceptions.
 #     For example, yieldAllValid([255, 16, 'foo', 3], toHex) => 'ff', '10', '3'
 
+# yieldAllValid: Iterable Lambda -> Iterable
+# Yields the returned value for each element of 
+# the iterable after applying the function to it, 
+# while ignoring any that raise a ValueError
 def yieldAllValid(iterable, function):
-    raise NotImplementedError
+    for item in iterable:
+        try:
+            yield function(item)
+        except ValueError:
+            pass
 
 
 
@@ -138,10 +176,14 @@ def yieldAllValid(iterable, function):
 # Objectives:
 # (1) Create a string which has each level of the tree on a new line
 
+# treeToString: Node -> String
+# Returns a string which has each level of the tree on a new line.
 def treeToString(root):
-    raise NotImplementedError
-
-
+    if root.subnodes == []:
+        return str(root.value)
+    else:
+        return str(root.value) + '\n' + ''.join(treeToString(subnode) for subnode in root.subnodes)
+        
 if __name__ == '__main__':
     try:
         print(f'fib(15) => {fib(15)}') # 610
