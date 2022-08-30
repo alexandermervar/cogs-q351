@@ -176,14 +176,25 @@ def yieldAllValid(iterable, function):
 # Objectives:
 # (1) Create a string which has each level of the tree on a new line
 
+# A Node is an object
+# - value : Number
+# - children : List of Nodes
+# class Node:
+#     def __init__(self, value, subnodes):
+#         self.value = value
+#         self.subnodes = subnodes
+#     def __repr__(self):
+#         return f'Node({self.value!r}, {self.subnodes!r})'
+
 # treeToString: Node -> String
 # Returns a string which has each level of the tree on a new line.
 def treeToString(root):
     if root.subnodes == []:
         return str(root.value)
     else:
-        return str(root.value) + '\n' + ''.join(treeToString(subnode) for subnode in root.subnodes)
-        
+        for subnode in root.subnodes:
+            return str(root.value) + '\n' + ''.join(treeToString(subnode) for subnode in root.subnodes)
+
 if __name__ == '__main__':
     try:
         print(f'fib(15) => {fib(15)}') # 610
@@ -222,7 +233,17 @@ if __name__ == '__main__':
     except NotImplementedError:
         print('yieldAllValid not implemented')
 
+    print()
+    print('Bonus Question Test Case(s):')
+    print()
     try:
         print(f'treeToString(exampleTree) =>\n {treeToString(exampleTree)!r}') # '1\n23\n4\n56\n7\n'
     except NotImplementedError:
         print('treeToString not implemented')
+
+    print('Additional Test Case(s):')
+    exTree = Node(1,[Node(2,[Node(4,[Node(5,[]), Node(6,[Node (7 ,[])])])]), Node(3,[])])
+    try:
+        print(f'treeToString(exTree) =>\n {treeToString(exTree)!r}') # '1\n23\n4\n56\n7\n'
+    except:
+        print('Additional Test Case(s) 1 not implemented')
