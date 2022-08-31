@@ -9,6 +9,7 @@
 #################################
 
 import math
+import queue
 
 #################################
 # Problem 1
@@ -189,11 +190,22 @@ def yieldAllValid(iterable, function):
 # treeToString: Node -> String
 # Returns a string which has each level of the tree on a new line.
 def treeToString(root):
-    if root.subnodes == []:
-        return str(root.value)
-    else:
-        for subnode in root.subnodes:
-            return str(root.value) + '\n' + ''.join(treeToString(subnode) for subnode in root.subnodes)
+    #Implement using breadth-first search
+    queue = [root]
+    string = ''
+    while queue != []:
+        subs = []
+        for node in queue:
+            string += str(node.value)
+            subs.extend(node.subnodes)
+        string += '\n'
+        queue = subs
+    return string
+
+
+
+
+
 
 if __name__ == '__main__':
     try:
