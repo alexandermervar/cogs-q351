@@ -144,16 +144,43 @@ class Board():
     # returns True if the space is empty and on the board,
     # and assigning value to it if not blocked by any constraints
     def isValidMove(self, space, value):
-        raise NotImplementedError
+        # Takes a tuple of the form (r, c) and a valid assignment.
+        # 1. Check if the space is empty
+        # 2. Check if the space is on the board
+        if not (space in self.board):
+            return False
+        if self.board[space] is not None:
+            return False
+        # 3. Check if the value is not blocked by any constraints
+        if value in self.valsInRows[self.valsInRows[space[0]]]:
+            return False
+        if value in self.valsInCols[self.valsInCols[space[1]]]:
+            return False
+        if value in self.valsInBoxes[self.spaceToBox(space[0], space[1])]:
+            return False
+        return True
 
     # optional helper function for use by getMostConstrainedUnsolvedSpace
     def evaluateSpace(self, space):
-        raise NotImplementedError
+        # returns the number of values that are not in the row, col, or box of the space
+        return len(self.valsInRows[space[0]]) + len(self.valsInCols[space[1]]) + len(self.valsInBoxes[self.spaceToBox(space[0], space[1])])
+        
 
     # gets the unsolved space with the most current constraints
     # returns None if unsolvedSpaces is empty
     def getMostConstrainedUnsolvedSpace(self):
-        raise NotImplementedError
+        # 1. Check if unsolvedSpaces is empty
+        if len(self.unsolvedSpaces) == 0:
+            return None
+        # 2. Get the space with the most current constraints
+        mostConstrainedSpace = None
+        mostConstrainedSpaceConstraints = 0
+        for space in self.unsolvedSpaces:
+            constraints = self.evaluateSpace(space)
+            if constraints > mostConstrainedSpaceConstraints:
+                mostConstrainedSpace = space
+                mostConstrainedSpaceConstraints = constraints
+        return mostConstrainedSpace
 
 class Solver:
     ##########################################
