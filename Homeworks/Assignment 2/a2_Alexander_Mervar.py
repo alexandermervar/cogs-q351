@@ -162,7 +162,7 @@ class Board():
 
     # optional helper function for use by getMostConstrainedUnsolvedSpace
     def evaluateSpace(self, space):
-        # returns the number of values that are not in the row, col, or box of the space
+        # returns the number of values that are in the row, col, or box of the space
         return len(self.valsInRows[space[0]]) + len(self.valsInCols[space[1]]) + len(self.valsInBoxes[self.spaceToBox(space[0], space[1])])
         
 
@@ -201,12 +201,39 @@ class Solver:
 
     # returns True if a solution exists and False if one does not
     def solveBoard(self, board):
-        raise NotImplementedError
+        # Takes in a Board object and implements backtracking search with forward checking.
+        # Returns a solved board if a solution exists and the original board if a solution does not exist.
+        
+        # A 9 x 9 board should take about 1 minute to solve.
+
+        # 1. Get the most constrained unsolved space
+        mostConstrainedSpace = board.getMostConstrainedUnsolvedSpace()
+        if mostConstrainedSpace is None:
+            return board
+        # 2. Create a list of valid assignments for the space
+        validAssignments = []
+        for i in range(1, board.n2 + 1):
+            if board.isValidMove(mostConstrainedSpace, i):
+                validAssignments.append(i)
+        # 3. If there is an empty space, and no valid assignments, return the original board
+        if len(validAssignments) == 0:
+            return board
+        # 4. If there is an empty space, and there is at least one valid assignment, try each valid assignment.
+        for assignment in validAssignments:
+            # 5. Make the move
+            board.makeMove(mostConstrainedSpace, assignment)
+            # 6. Recursively call solveBoard on the new board
+            self.solveBoard(board)
+
+        
+
+
+
 
 
 if __name__ == "__main__":
     # change this to the input file that you'd like to test
-    board = Board('tests/example.csv')
+    board = Board('Homeworks/Assignment 2/tests/example.csv')
     s = Solver()
     s.solveBoard(board)
     board.print()
