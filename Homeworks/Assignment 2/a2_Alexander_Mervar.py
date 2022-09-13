@@ -162,9 +162,12 @@ class Board():
 
     # optional helper function for use by getMostConstrainedUnsolvedSpace
     def evaluateSpace(self, space):
-        # returns the number of values that are in the row, col, or box of the space
-        return len(self.valsInRows[space[0]]) + len(self.valsInCols[space[1]]) + len(self.valsInBoxes[self.spaceToBox(space[0], space[1])])
-        
+        # returns the number of possible values for the space
+        domain = set(range(1, self.n2 + 1))
+        domain = set(domain - self.valsInRows[space[0]])
+        domain = set(domain - self.valsInCols[0])
+        domain = set(domain - self.valsInBoxes[self.spaceToBox(space[0], space[1])])
+        return domain
 
     # gets the unsolved space with the most current constraints
     # returns None if unsolvedSpaces is empty
@@ -177,9 +180,9 @@ class Board():
         mostConstrainedSpaceConstraints = 0
         for space in self.unsolvedSpaces:
             constraints = self.evaluateSpace(space)
-            if constraints > mostConstrainedSpaceConstraints:
+            if len(constraints) > mostConstrainedSpaceConstraints:
                 mostConstrainedSpace = space
-                mostConstrainedSpaceConstraints = constraints
+                mostConstrainedSpaceConstraints = len(constraints)
         return mostConstrainedSpace
 
 class Solver:
@@ -212,26 +215,17 @@ class Solver:
 
         # 1. Get the most constrained unsolved space
         mostConstrainedSpace = board.getMostConstrainedUnsolvedSpace()
-        if mostConstrainedSpace is None:
-            return board
-        # 2. Create a list of valid assignments for the space
-        validAssignments = []
-        for i in range(1, board.n2 + 1):
-            if board.isValidMove(mostConstrainedSpace, i):
-                validAssignments.append(i)
-        # 3. If there is an empty space, and no valid assignments, return the original board
-        if len(validAssignments) == 0:
-            return False
-        # 4. If there is an empty space, and there is at least one valid assignment, try each valid assignment.
-        for assignment in validAssignments:
-            # 5. Make the move
-            board.makeMove(mostConstrainedSpace, assignment)
-            # 6. Recursively call solveBoard on the new board
+        domain = board.evaluateSpace(mostConstrainedSpace)
+        for value in domain:
+            # 2. Try assigning the value to the space
+            board.makeMove(mostConstrainedSpace, value)
+            # 3. Is the board solved?
             if self.solveBoard(board):
                 return True
-            # 7. If the recursive call returns False, undo the move
-            board.undoMove(mostConstrainedSpace, assignment)
-
+            else:
+                # 4. If the board is not solved, undo the move
+                board.undoMove(mostConstrainedSpace, value)
+                return False
 
 
 if __name__ == "__main__":
