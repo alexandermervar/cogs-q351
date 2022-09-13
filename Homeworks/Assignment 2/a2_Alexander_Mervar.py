@@ -206,6 +206,10 @@ class Solver:
         
         # A 9 x 9 board should take about 1 minute to solve.
 
+        # 0. Is the board solved?
+        if board.unsolvedSpaces == None:
+            return True
+
         # 1. Get the most constrained unsolved space
         mostConstrainedSpace = board.getMostConstrainedUnsolvedSpace()
         if mostConstrainedSpace is None:
@@ -217,17 +221,16 @@ class Solver:
                 validAssignments.append(i)
         # 3. If there is an empty space, and no valid assignments, return the original board
         if len(validAssignments) == 0:
-            return board
+            return False
         # 4. If there is an empty space, and there is at least one valid assignment, try each valid assignment.
         for assignment in validAssignments:
             # 5. Make the move
             board.makeMove(mostConstrainedSpace, assignment)
             # 6. Recursively call solveBoard on the new board
-            self.solveBoard(board)
-
-        
-
-
+            if self.solveBoard(board):
+                return True
+            # 7. If the recursive call returns False, undo the move
+            board.undoMove(mostConstrainedSpace, assignment)
 
 
 
