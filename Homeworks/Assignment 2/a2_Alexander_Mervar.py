@@ -220,7 +220,7 @@ class Solver:
 if __name__ == "__main__":
     startTime = time.time()
     # change this to the input file that you'd like to test
-    board = Board('/Users/mervar/Library/CloudStorage/OneDrive-IndianaUniversity/cogs-q351/Homeworks/Assignment 2/tests/test-3-hard/00.csv')
+    board = Board('/Users/mervar/Library/CloudStorage/OneDrive-IndianaUniversity/cogs-q351/Homeworks/Assignment 2/tests/test-4-tough/00.csv')
     board.print()
     s = Solver()
     s.solveBoard(board)
