@@ -124,9 +124,6 @@ class Board():
         self.valsInBoxes[self.spaceToBox(selectedRow, selectedCol)].add(value)
         self.unsolvedSpaces.remove(space)
 
-
-
-
     # removes the move, its record in its row, col, and box, and adds the space back to unsolvedSpaces
     def undoMove(self, space, value):
         # Takes a tuple of the form (r, c) and a valid assignment.
@@ -162,28 +159,32 @@ class Board():
 
     # optional helper function for use by getMostConstrainedUnsolvedSpace
     def evaluateSpace(self, space):
-        # returns the number of possible values for the space
-        domain = set(range(1, self.n2 + 1))
-        domain = set(domain - self.valsInRows[space[0]])
-        domain = set(domain - self.valsInCols[0])
-        domain = set(domain - self.valsInBoxes[self.spaceToBox(space[0], space[1])])
+        domain = set()
+        for i in range(1, self.n2 + 1):
+            if self.isValidMove(space, i):
+                domain.add(i)
         return domain
 
     # gets the unsolved space with the most current constraints
     # returns None if unsolvedSpaces is empty
     def getMostConstrainedUnsolvedSpace(self):
-        # 1. Check if unsolvedSpaces is empty
+        # returns a list of all of the most constrained spaces.
+        # If there are no unsolved spaces, return None
         if len(self.unsolvedSpaces) == 0:
             return None
-        # 2. Get the space with the most current constraints
-        mostConstrainedSpace = None
-        mostConstrainedSpaceConstraints = 0
+        # 1. Get the list of all unsolved spaces
+        # 2. For each space, evaluate the number of constraints
+        # 3. Return the spaces with the most constraints
+        mostConstrainedSpaces = []
+        mostConstraints = 0
         for space in self.unsolvedSpaces:
-            constraints = self.evaluateSpace(space)
-            if len(constraints) > mostConstrainedSpaceConstraints:
-                mostConstrainedSpace = space
-                mostConstrainedSpaceConstraints = len(constraints)
-        return mostConstrainedSpace
+            constraints = len(self.evaluateSpace(space))
+            if constraints > mostConstraints:
+                mostConstrainedSpaces = [space]
+                mostConstraints = constraints
+            elif constraints == mostConstraints:
+                mostConstrainedSpaces.append(space)
+        return mostConstrainedSpaces
 
 class Solver:
     ##########################################
@@ -204,33 +205,27 @@ class Solver:
 
     # returns True if a solution exists and False if one does not
     def solveBoard(self, board):
-        # Takes in a Board object and implements backtracking search with forward checking.
-        # Returns a solved board if a solution exists and the original board if a solution does not exist.
-        
-        # A 9 x 9 board should take about 1 minute to solve.
-
-        # 0. Is the board solved?
-        if board.unsolvedSpaces == None:
+        # 1. Check if the board is solved
+        if len(board.unsolvedSpaces) == 0:
             return True
-
-        # 1. Get the most constrained unsolved space
-        mostConstrainedSpace = board.getMostConstrainedUnsolvedSpace()
-        domain = board.evaluateSpace(mostConstrainedSpace)
-        for value in domain:
-            # 2. Try assigning the value to the space
-            board.makeMove(mostConstrainedSpace, value)
-            # 3. Is the board solved?
-            if self.solveBoard(board):
-                return True
-            else:
-                # 4. If the board is not solved, undo the move
-                board.undoMove(mostConstrainedSpace, value)
-                return False
-
+        # 2. Get the most constrained unsolved space
+        spaces = board.getMostConstrainedUnsolvedSpace()
+        # 3. For each value in the domain of the most constrained space
+        for space in spaces:
+            for value in board.evaluateSpace(space):
+                # 4. Make the move
+                board.makeMove(space, value)
+                # 5. Recursively call solveBoard
+                if self.solveBoard(board):
+                    return True
+                # 6. Undo the move
+                board.undoMove(space, value)
+        # 7. Return False
+        return False
 
 if __name__ == "__main__":
     # change this to the input file that you'd like to test
-    board = Board('Homeworks/Assignment 2/tests/example.csv')
+    board = Board('/Users/mervar/Library/CloudStorage/OneDrive-IndianaUniversity/cogs-q351/Homeworks/Assignment 2/tests/test-1-easy/00.csv')
     s = Solver()
     s.solveBoard(board)
     board.print()
