@@ -4,6 +4,7 @@
 
 import csv
 import itertools
+import time
 
 class Board():
 
@@ -132,7 +133,7 @@ class Board():
         # 3. Add the space back to unsolvedSpaces
         selectedRow = space[0]
         selectedCol = space[1]
-        self.board[space] = None
+        del self.board[space]
         self.valsInRows[selectedRow].remove(value)
         self.valsInCols[selectedCol].remove(value)
         self.valsInBoxes[self.spaceToBox(selectedRow, selectedCol)].remove(value)
@@ -159,10 +160,10 @@ class Board():
 
     # optional helper function for use by getMostConstrainedUnsolvedSpace
     def evaluateSpace(self, space):
-        domain = set()
-        for i in range(1, self.n2 + 1):
-            if self.isValidMove(space, i):
-                domain.add(i)
+        domain = set(range(1, self.n2 + 1))
+        domain = set(domain - self.valsInRows[space[0]])
+        domain = set(domain - self.valsInCols[space[1]])
+        domain = set(domain - self.valsInBoxes[self.spaceToBox(space[0], space[1])])
         return domain
 
     # gets the unsolved space with the most current constraints
@@ -172,19 +173,14 @@ class Board():
         # If there are no unsolved spaces, return None
         if len(self.unsolvedSpaces) == 0:
             return None
-        # 1. Get the list of all unsolved spaces
-        # 2. For each space, evaluate the number of constraints
-        # 3. Return the spaces with the most constraints
-        mostConstrainedSpaces = []
-        mostConstraints = 0
+        # 1. Get the most constrained space
+        mostConstrainedSpace = None
+        mostConstrainedNumber = self.n2
         for space in self.unsolvedSpaces:
-            constraints = len(self.evaluateSpace(space))
-            if constraints > mostConstraints:
-                mostConstrainedSpaces = [space]
-                mostConstraints = constraints
-            elif constraints == mostConstraints:
-                mostConstrainedSpaces.append(space)
-        return mostConstrainedSpaces
+            if len(self.evaluateSpace(space)) < mostConstrainedNumber:
+                mostConstrainedSpace = space
+                mostConstrainedNumber = len(self.evaluateSpace(space))
+        return mostConstrainedSpace
 
 class Solver:
     ##########################################
@@ -208,24 +204,25 @@ class Solver:
         # 1. Check if the board is solved
         if len(board.unsolvedSpaces) == 0:
             return True
-        # 2. Get the most constrained unsolved space
-        spaces = board.getMostConstrainedUnsolvedSpace()
-        # 3. For each value in the domain of the most constrained space
-        for space in spaces:
-            for value in board.evaluateSpace(space):
-                # 4. Make the move
+        space = board.getMostConstrainedUnsolvedSpace()
+        domain = board.evaluateSpace(space)
+        for value in domain:
                 board.makeMove(space, value)
-                # 5. Recursively call solveBoard
-                if self.solveBoard(board):
+                if not(self.solveBoard(board)):
+                    board.undoMove(space, value)
+                else:
                     return True
-                # 6. Undo the move
-                board.undoMove(space, value)
-        # 7. Return False
-        return False
+        if len(board.unsolvedSpaces) == 0:
+            return True
+        else:
+            return False
 
 if __name__ == "__main__":
+    startTime = time.time()
     # change this to the input file that you'd like to test
-    board = Board('/Users/mervar/Library/CloudStorage/OneDrive-IndianaUniversity/cogs-q351/Homeworks/Assignment 2/tests/test-1-easy/00.csv')
+    board = Board('/Users/mervar/Library/CloudStorage/OneDrive-IndianaUniversity/cogs-q351/Homeworks/Assignment 2/tests/test-3-hard/00.csv')
+    board.print()
     s = Solver()
     s.solveBoard(board)
     board.print()
+    print("Time: %f" % (time.time() - startTime))
