@@ -302,43 +302,43 @@ def main():
     # result = ids(node1.board, goal_board, 2)
     # assert type(result) is Board.Board
 
-    # # 15-Puzzle Tests
+    # 15-Puzzle Tests
 
-    # goal_board = Board.Board([[1, 2, 3, 4],
-    #                           [5, 6, 7, 8],
-    #                           [9, 10, 11, 12],
-    #                           [13, 14, 15, 0]])
+    goal_board = Board.Board([[1, 2, 3, 4],
+                              [5, 6, 7, 8],
+                              [9, 10, 11, 12],
+                              [13, 14, 15, 0]])
 
-    # simple_board = Board.Board([[1, 2, 3, 0],
-    #                             [5, 6, 7, 4],
-    #                             [9, 10, 11, 8],
-    #                             [13, 14, 15, 12]])
-    # # print(goal_board)
-    # # print(simple_board)
+    simple_board = Board.Board([[1, 2, 3, 0],
+                                [5, 6, 7, 4],
+                                [9, 10, 11, 8],
+                                [13, 14, 15, 12]])
+    # print(goal_board)
+    # print(simple_board)
 
-    # fringe1 = []
-    # node1 = State.State(simple_board, None, 0, 0)
-    # expand_fringe(node1, fringe1)
-    # assert State.State(simple_board.slide_blank((-1, 0)), node1, 0, 0) not in fringe1
-    # assert State.State(simple_board.slide_blank((0, -1)), node1, 0, 1) in fringe1
+    fringe1 = []
+    node1 = State.State(simple_board, None, 0, 0)
+    expand_fringe(node1, fringe1)
+    assert State.State(simple_board.slide_blank((-1, 0)), node1, 0, 0) not in fringe1
+    assert State.State(simple_board.slide_blank((0, -1)), node1, 0, 1) in fringe1
 
-    # # Simple test case for breadth_first_search
-    # fringe1 = []
-    # node1 = State.State(simple_board, None, 0, 0)
-    # expand_fringe(node1, fringe1)
-    # assert breadth_first_search(fringe1, 3, goal_board) == CONTINUE
-    # fringe1[0] = State.State(goal_board, node1, 0, 0)
-    # assert type(breadth_first_search(fringe1, 3, goal_board)) is State.State
+    # Simple test case for breadth_first_search
+    fringe1 = []
+    node1 = State.State(simple_board, None, 0, 0)
+    expand_fringe(node1, fringe1)
+    assert breadth_first_search(fringe1, 3, goal_board) == CONTINUE
+    fringe1[0] = State.State(goal_board, node1, 0, 0)
+    assert type(breadth_first_search(fringe1, 3, goal_board)) is State.State
 
-    # # Simple test case for ucs_f_function
-    # node1 = State.State(simple_board, None, 0, 0)
-    # assert ucs_f_function(node1.board, 0) == 0
+    # Simple test case for ucs_f_function
+    node1 = State.State(simple_board, None, 0, 0)
+    assert ucs_f_function(node1.board, 0) == 0
 
-    # # Simple test case for a_star_f_function
-    # # -> This ONLY checks that the return type is correct
-    # assert hasattr(a_star_f_function_factory(None, goal_board), '__call__')
+    # Simple test case for a_star_f_function
+    # -> This ONLY checks that the return type is correct
+    assert hasattr(a_star_f_function_factory(None, goal_board), '__call__')
 
-    # # This section is for you to create tests for your own heuristic
+    # This section is for you to create tests for your own heuristic
 
 
     # # Simple test for Informed Expansion
