@@ -12,6 +12,7 @@
 import State
 import Board
 import heapq
+import math
 
 STOP = -1
 CONTINUE = 0
@@ -150,8 +151,9 @@ def manhattan_distance(current_board, goal_board):
 
 def my_heuristic(current_board, goal_board):
     # Returns an estimate of how many moves it will take to reach the goal board
-    # Returns the euclidean distance between the current board and the goal board
-    total = 0
+    # Your heuristic must be admissible (never overestimate cost to goal), but
+    # it does not have to be consistent (never overestimate step costs).
+    value = 0
     goal_matrix = goal_board.matrix
     for goal_r in range(len(goal_board.matrix)):
         for goal_c in range(len(goal_board.matrix[0])):
@@ -159,8 +161,9 @@ def my_heuristic(current_board, goal_board):
             if val == 0:
                 continue
             current_r, current_c = current_board.find_element(val)
-            total += ((goal_r - current_r) ** 2 + (goal_c - current_c) ** 2) ** 0.5
-    return total
+            value += abs(goal_r - current_r) + abs(goal_c - current_c)
+    return value
+
 
 #################################
 # Problem 6 - Informed Expansion
@@ -301,8 +304,8 @@ def main():
 
     # # This section is for you to create tests for your own heuristic
     # A test for the euclidean distance heuristic
-    assert my_heuristic(simple_board, goal_board) <= manhattan_distance(simple_board, goal_board)
-    assert my_heuristic(hard_board, goal_board) <= manhattan_distance(hard_board, goal_board)
+    assert my_heuristic(simple_board, goal_board) >= manhattan_distance(simple_board, goal_board)
+    assert my_heuristic(hard_board, goal_board) >= manhattan_distance(hard_board, goal_board)
 
 
     # Simple test for Informed Expansion
@@ -364,7 +367,7 @@ def main():
     assert hasattr(a_star_f_function_factory(None, goal_board), '__call__')
 
     # This section is for you to create tests for your own heuristic
-    assert my_heuristic(simple_board, goal_board) <= manhattan_distance(simple_board, goal_board)
+    assert my_heuristic(simple_board, goal_board) >= manhattan_distance(simple_board, goal_board)
 
     # Simple test for Informed Expansion
     node1 = State.State(simple_board, None, 0, 0)
