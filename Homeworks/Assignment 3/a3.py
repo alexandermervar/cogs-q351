@@ -339,7 +339,7 @@ def main():
     assert hasattr(a_star_f_function_factory(None, goal_board), '__call__')
 
     # This section is for you to create tests for your own heuristic
-
+    assert my_heuristic(simple_board, goal_board) <= manhattan_distance(simple_board, goal_board)
 
     # # Simple test for Informed Expansion
     # node1 = State.State(simple_board, None, 0, 0)
