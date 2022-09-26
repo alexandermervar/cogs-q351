@@ -97,7 +97,6 @@ def uninformed_solver(start_board, max_depth, goal_board):
 # (1) Write a function that takes a board and depth and returns the f-value
 #     (priority) that board should have in a uniform-cost search scenario.
 
-# TODO: Check with a TA
 def ucs_f_function(board, current_depth):
     # In a uniform-cost search, the f-value is the depth of the state.
     return current_depth
@@ -171,12 +170,21 @@ def my_heuristic(current_board, goal_board):
 #     provided. Note that States automatically sort by their f-values.
 #
 # Notes:
-# (1) This function should update the contents of the fringe using heapq.
+# (1) This function should update the contents of the fringe using heap.
 
-
+# TODO: Check with TA
 def informed_expansion(current_state, fringe, f_function):
-    raise NotImplementedError
-
+    # Expands the fringe using the f-value function provided
+    # This function should update the contents of the fringe using heapq
+    # board_object.slide_blank is error-safe. It will return None if it is impossible to slide the blank
+    # Go through each possible move and create a child state for each one
+    for move in [moveOne, moveTwo, moveThree, moveFour]:
+        # Create a child state for each possible move
+        testCase = current_state.board.slide_blank(move)
+        if testCase is not None:
+            # If the move is possible, add it to the fringe
+            # The f-value of the child state is the current depth + the f-value of the board
+            heapq.heappush(fringe, State.State(testCase, current_state, current_state.depth + 1, f_function(testCase, current_state.depth + 1)))
 
 #################################
 # Problem 7 - Informed Search
@@ -187,10 +195,27 @@ def informed_expansion(current_state, fringe, f_function):
 #     (Returns STOP if the fringe is empty.)
 #     See the project documentation for more details.
 
-
+# TODO: Check with TA
 def informed_search(fringe, goal_board, f_function, explored):
-    raise NotImplementedError
+# 1. If the fringe is empty then stop.
+# 2. Otherwise, get the top state from the fringe.
+# 3. If the current state’s board has already been seen and the current state’s f-value is not smaller than the previous f-value, then skip this state and continue.
+# 4. Add the current state’s board and its f-value to the explored dictionary.
+# 5. If the current state is the goal board, return the state.
+# 6. Otherwise expand the fringe and continue.
 
+    # Get the f-value for the current state
+    currentStateFValue = f_function(fringe[0].board, fringe[0].depth)
+
+    if len(fringe) == 0:
+        return STOP
+    current_state = heapq.heappop(fringe)
+    if current_state.board in explored and explored[current_state.board] <= currentStateFValue:
+        return CONTINUE
+    explored[current_state.board] = currentStateFValue
+    if current_state.board == goal_board:
+        return current_state
+    informed_expansion(current_state, fringe, f_function)
 
 def informed_solver(start_board, goal_board, f_function):
     """
@@ -280,21 +305,21 @@ def main():
     assert my_heuristic(hard_board, goal_board) <= manhattan_distance(hard_board, goal_board)
 
 
-    # # Simple test for Informed Expansion
-    # node1 = State.State(simple_board, None, 0, 0)
-    # fringe1 = []
-    # informed_expansion(node1, fringe1, ucs_f_function)
-    # assert State.State(simple_board.slide_blank((-1, 0)), node1, 0, 0) not in fringe1
-    # assert State.State(simple_board.slide_blank((0, -1)), node1, 0, 1) in fringe1
+    # Simple test for Informed Expansion
+    node1 = State.State(simple_board, None, 0, 0)
+    fringe1 = []
+    informed_expansion(node1, fringe1, ucs_f_function)
+    assert State.State(simple_board.slide_blank((-1, 0)), node1, 0, 0) not in fringe1
+    assert State.State(simple_board.slide_blank((0, -1)), node1, 0, 1) in fringe1
 
-    # # Simple test for Informed Search
-    # fringe1 = []
-    # explored = {}
-    # node1 = State.State(simple_board, None, 0, 0)
-    # expand_fringe(node1, fringe1)
-    # assert informed_search(fringe1, goal_board, ucs_f_function, explored) == CONTINUE
-    # fringe1[0] = State.State(goal_board, node1, 0, 0)
-    # assert type(informed_search(fringe1, goal_board, ucs_f_function, explored)) is State.State
+    # Simple test for Informed Search
+    fringe1 = []
+    explored = {}
+    node1 = State.State(simple_board, None, 0, 0)
+    expand_fringe(node1, fringe1)
+    assert informed_search(fringe1, goal_board, ucs_f_function, explored) == CONTINUE
+    fringe1[0] = State.State(goal_board, node1, 0, 0)
+    assert type(informed_search(fringe1, goal_board, ucs_f_function, explored)) is State.State
 
     # # Simple test for IDS
     # node1 = State.State(simple_board, None, 0, 0)
@@ -341,21 +366,21 @@ def main():
     # This section is for you to create tests for your own heuristic
     assert my_heuristic(simple_board, goal_board) <= manhattan_distance(simple_board, goal_board)
 
-    # # Simple test for Informed Expansion
-    # node1 = State.State(simple_board, None, 0, 0)
-    # fringe1 = []
-    # informed_expansion(node1, fringe1, ucs_f_function)
-    # assert State.State(simple_board.slide_blank((-1, 0)), node1, 0, 0) not in fringe1
-    # assert State.State(simple_board.slide_blank((0, -1)), node1, 0, 1) in fringe1
+    # Simple test for Informed Expansion
+    node1 = State.State(simple_board, None, 0, 0)
+    fringe1 = []
+    informed_expansion(node1, fringe1, ucs_f_function)
+    assert State.State(simple_board.slide_blank((-1, 0)), node1, 0, 0) not in fringe1
+    assert State.State(simple_board.slide_blank((0, -1)), node1, 0, 1) in fringe1
 
-    # # Simple test for Informed Search
-    # fringe1 = []
-    # explored = {}
-    # node1 = State.State(simple_board, None, 0, 0)
-    # expand_fringe(node1, fringe1)
-    # assert informed_search(fringe1, goal_board, ucs_f_function, explored) == CONTINUE
-    # fringe1[0] = State.State(goal_board, node1, 0, 0)
-    # assert type(informed_search(fringe1, goal_board, ucs_f_function, explored)) is State.State
+    # Simple test for Informed Search
+    fringe1 = []
+    explored = {}
+    node1 = State.State(simple_board, None, 0, 0)
+    expand_fringe(node1, fringe1)
+    assert informed_search(fringe1, goal_board, ucs_f_function, explored) == CONTINUE
+    fringe1[0] = State.State(goal_board, node1, 0, 0)
+    assert type(informed_search(fringe1, goal_board, ucs_f_function, explored)) is State.State
 
     # # Simple test for IDS
     # node1 = State.State(simple_board, None, 0, 0)
