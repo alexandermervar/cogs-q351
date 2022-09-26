@@ -204,18 +204,18 @@ def informed_search(fringe, goal_board, f_function, explored):
 # 5. If the current state is the goal board, return the state.
 # 6. Otherwise expand the fringe and continue.
 
-    # Get the f-value for the current state
-    currentStateFValue = f_function(fringe[0].board, fringe[0].depth)
-
+# Explored is a dictionary mapping boards to their lowest encountered f-values
     if len(fringe) == 0:
         return STOP
     current_state = heapq.heappop(fringe)
-    if current_state.board in explored and explored[current_state.board] <= currentStateFValue:
-        return CONTINUE
-    explored[current_state.board] = currentStateFValue
+    if current_state.board in explored:
+        if explored[current_state.board] <= current_state.fvalue:
+            return CONTINUE
+    explored[current_state.board] = current_state.fvalue
     if current_state.board == goal_board:
         return current_state
     informed_expansion(current_state, fringe, f_function)
+    return CONTINUE
 
 def informed_solver(start_board, goal_board, f_function):
     """
