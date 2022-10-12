@@ -7,31 +7,61 @@
 ### Doing so constitutes academic misconduct and copyright infringement.
 
 import math
+import random
 from board import Board
 
 class BasePlayer:
     def __init__(self, max_depth):
         self.max_depth = max_depth
 
-    ##################
-    #      TODO      #
-    ##################
     # Assign integer scores to the three terminal states
     # P2_WIN_SCORE < TIE_SCORE < P1_WIN_SCORE
     # Access these with "self.TIE_SCORE", etc.
-    P1_WIN_SCORE = NotImplemented
-    P2_WIN_SCORE = NotImplemented
-    TIE_SCORE =  NotImplemented
+    P1_WIN_SCORE = 1
+    P2_WIN_SCORE = -1
+    TIE_SCORE = 0
 
     # Returns a heuristic for the board position
     # Good positions for 0 pieces should be positive and
     # good positions for 1 pieces should be negative
     # for all boards, P2_WIN_SCORE < heuristic(b) < P1_WIN_SCORE
+    
     def heuristic(self, board):
-        raise NotImplementedError
+        # returns a value based on the given board between -1 and 1
+        # 1 is a win for player 1, -1 is a win for player 2
+        # 0 is a tie
+        # the closer to 0, the closer to a tie
+        # the closer to 1, the closer to a win for player 1
+        # the closer to -1, the closer to a win for player 2
+        playerOneScore = board.p1_pot
+        playerTwoScore = board.p2_pot
+        playerOnePits = board.p1_pits
+        playerTwoPits = board.p2_pits
+        availableStones = sum.playerOnePits + sum.playerTwoPits
+        if playerOneScore > playerTwoScore:
+            return 1 - (availableStones / 48)
+        elif playerTwoScore > playerOneScore:
+            return -1 + (availableStones / 48)
+        else:
+            return 0
+        
 
+    #TODO: Implement this function
     def findMove(self, trace):
-        raise NotImplementedError
+        # Returns the best move for the current player
+        # given the current board position
+        # trace is a string of moves that have been made
+        # so far in the game
+        # You can use the trace to initialize the board
+        # and then call self.minimax() to find the best move
+        # You should return an integer between 0 and 5
+        # representing the pit to move from
+        # If no moves are available, return None
+        board = Board(trace)
+        if board.turn == 0:
+            return self.minimax(board, 0, self.max_depth, 0)
+        else:
+            return self.minimax(board, 0, self.max_depth, 1)
 
 class ManualPlayer(BasePlayer):
     def __init__(self, max_depth=None):
@@ -83,11 +113,9 @@ class RemotePlayer(BasePlayer):
 
 
 class PlayerMM(BasePlayer):
-    ##################
-    #      TODO      #
-    ##################
     # performs minimax on board with depth.
     # returns the best move and best score as a tuple
+    #TODO: Implement this function
     def minimax(self, board, depth):
         raise NotImplementedError
 
@@ -97,14 +125,12 @@ class PlayerMM(BasePlayer):
         return move
 
 class PlayerAB(BasePlayer):
-    ##################
-    #      TODO      #
-    ##################
     # performs minimax with alpha-beta pruning on board with depth.
     # alpha represents the score of max's current strategy
     # beta  represents the score of min's current strategy
     # in a cutoff situation, return the score that resulted in the cutoff
     # returns the best move and best score as a tuple
+    #TODO: Implement this function
     def alphaBeta(self, board, depth, alpha, beta):
         raise NotImplementedError
 
@@ -120,11 +146,9 @@ class PlayerDP(PlayerAB):
         PlayerAB.__init__(self, max_depth)
         self.resolved = {}
 
-    ##################
-    #      TODO      #
-    ##################
     # if a saved heuristic value exists in self.resolved for board.state, returns that value
     # otherwise, uses BasePlayer.heuristic to get a heuristic value and saves it under board.state
+    #TODO: Implement this function
     def heuristic(self, board):
         raise NotImplementedError
 
@@ -132,6 +156,7 @@ class PlayerDP(PlayerAB):
 class PlayerBonus(BasePlayer):
     ''' This class is here to give you space to experiment for your ultimate Mancala AI,
         your one and only PlayerBonus. This is only used for the extra credit tournament. '''
+    #TODO: Implement this function
     def findMove(self, trace):
         raise NotImplementedError
 
