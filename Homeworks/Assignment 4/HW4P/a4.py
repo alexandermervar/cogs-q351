@@ -54,10 +54,14 @@ if __name__ == "__main__":
     # Create player one by calling the
     # player class corresponding to the
     # search algorithm the player uses.
-    p1 = RemotePlayer(3)
+    p1 = RandomPlayer()
 
     # Same for player 2
-    p2 = ManualPlayer()
+    # p2 = RandomPlayer()
+    # p2 = ManualPlayer()
+    p2 = PlayerMM(6)
+    # p2 = PlayerAB(3)
+    # p2 = PlayerDP()
 
     # Create the game instance using the
     # board and players you've made.

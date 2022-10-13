@@ -9,6 +9,7 @@
 import math
 import random
 from board import Board
+import copy
 
 class BasePlayer:
     def __init__(self, max_depth):
@@ -37,7 +38,8 @@ class BasePlayer:
         playerTwoScore = board.p2_pot
         playerOnePits = board.p1_pits
         playerTwoPits = board.p2_pits
-        availableStones = sum.playerOnePits + sum.playerTwoPits
+        # add the number of stones in each pit to available score
+        availableStones = sum(playerOnePits) + sum(playerTwoPits)
         if playerOneScore > playerTwoScore:
             return 1 - (availableStones / 48)
         elif playerTwoScore > playerOneScore:
@@ -46,22 +48,9 @@ class BasePlayer:
             return 0
         
 
-    #TODO: Implement this function
     def findMove(self, trace):
-        # Returns the best move for the current player
-        # given the current board position
-        # trace is a string of moves that have been made
-        # so far in the game
-        # You can use the trace to initialize the board
-        # and then call self.minimax() to find the best move
-        # You should return an integer between 0 and 5
-        # representing the pit to move from
-        # If no moves are available, return None
-        board = Board(trace)
-        if board.turn == 0:
-            return self.minimax(board, 0, self.max_depth, 0)
-        else:
-            return self.minimax(board, 0, self.max_depth, 1)
+        raise NotImplementedError
+
 
 class ManualPlayer(BasePlayer):
     def __init__(self, max_depth=None):
@@ -115,9 +104,49 @@ class RemotePlayer(BasePlayer):
 class PlayerMM(BasePlayer):
     # performs minimax on board with depth.
     # returns the best move and best score as a tuple
-    #TODO: Implement this function
     def minimax(self, board, depth):
-        raise NotImplementedError
+        # evaluate which players turn it is
+        move = -1
+        score = -math.inf
+        # go through all legal moves and find the best one
+        if depth == 0:
+            return move, self.heuristic(board)
+        else:   
+            for m in board.getAllValidMoves():
+                # make a copy of the board array
+                newBoard = copy.deepcopy(board)
+                newBoard.makeMove(m)
+                newScore = self.minValue(newBoard, depth - 1)
+                if newScore > score:
+                    score = newScore
+                    move = m
+            return move, score
+
+    def minValue(self, board, depth):
+        if depth == 0:
+            return self.heuristic(board)
+        else:
+            score = math.inf
+            for m in board.getAllValidMoves():
+                newBoard = copy.deepcopy(board)
+                newBoard.makeMove(m)
+                newScore = self.maxValue(newBoard, depth - 1)
+                if newScore < score:
+                    score = newScore
+            return score
+
+    def maxValue(self, board, depth):
+        if depth == 0:
+            return self.heuristic(board)
+        else:
+            score = -math.inf
+            for m in board.getAllValidMoves():
+                newBoard = copy.deepcopy(board)
+                newBoard.makeMove(m)
+                newScore = self.minValue(newBoard, depth - 1)
+                if newScore > score:
+                    score = newScore
+            return score
 
     def findMove(self, trace):
         board = Board(trace)
