@@ -215,17 +215,19 @@ class PlayerDP(PlayerAB):
 
     # if a saved heuristic value exists in self.resolved for board.state, returns that value
     # otherwise, uses BasePlayer.heuristic to get a heuristic value and saves it under board.state
-    #TODO: Implement this function
     def heuristic(self, board):
-        raise NotImplementedError
+        if board.state in self.resolved:
+            return self.resolved[board.state]
+        else:
+            self.resolved[board.state] = BasePlayer.heuristic(self, board)
+            return self.resolved[board.state]
 
 
 class PlayerBonus(BasePlayer):
     ''' This class is here to give you space to experiment for your ultimate Mancala AI,
         your one and only PlayerBonus. This is only used for the extra credit tournament. '''
-    #TODO: Implement this function
     def findMove(self, trace):
-        raise NotImplementedError
+
 
 #######################################################
 ###########Example Subclass for Testing
@@ -233,9 +235,9 @@ class PlayerBonus(BasePlayer):
 
 # This will inherit your findMove from above, but will override the heuristic function with
 # a new one; you can swap out the type of player by changing X in "class TestPlayer(X):"
-class TestPlayer(BasePlayer):
+# class TestPlayer(BasePlayer):
     # define your new heuristic here
-    def heuristic(self):
+    # def heuristic(self):
         pass
 
 
