@@ -159,9 +159,47 @@ class PlayerAB(BasePlayer):
     # beta  represents the score of min's current strategy
     # in a cutoff situation, return the score that resulted in the cutoff
     # returns the best move and best score as a tuple
-    #TODO: Implement this function
     def alphaBeta(self, board, depth, alpha, beta):
-        raise NotImplementedError
+        for m in board.getAllValidMoves():
+            newBoard = copy.deepcopy(board)
+            newBoard.makeMove(m)
+            score = self.alphaBetaMin(newBoard, depth - 1, alpha, beta)
+            if score > alpha:
+                alpha = score
+                move = m
+        return move, alpha
+
+    def alphaBetaMax(self, board, depth, alpha, beta):
+        if depth == 0:
+            return self.heuristic(board)
+        else:
+            score = -math.inf
+            for m in board.getAllValidMoves():
+                newBoard = copy.deepcopy(board)
+                newBoard.makeMove(m)
+                newScore = self.alphaBetaMin(newBoard, depth - 1, alpha, beta)
+                if newScore > score:
+                    score = newScore
+                if score >= beta:
+                    return score
+                alpha = max(alpha, score)
+            return score
+
+    def alphaBetaMin(self, board, depth, alpha, beta):
+        if depth == 0:
+            return self.heuristic(board)
+        else:
+            score = math.inf
+            for m in board.getAllValidMoves():
+                newBoard = copy.deepcopy(board)
+                newBoard.makeMove(m)
+                newScore = self.alphaBetaMax(newBoard, depth - 1, alpha, beta)
+                if newScore < score:
+                    score = newScore
+                if score <= alpha:
+                    return score
+                beta = min(beta, score)
+            return score
 
     def findMove(self, trace):
         board = Board(trace)
