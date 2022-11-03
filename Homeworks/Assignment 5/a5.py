@@ -5,6 +5,7 @@
 # Do not share these assignments or their solutions outside of this class.
 
 import math
+import numpy as np
 
 # unique takes an iterable and returns
 # - a set of each unique item from that iterable
@@ -32,7 +33,13 @@ def unique(iterable):
 # Returns: a value representing the entropy
 
 def calc_entropy(classifications):
-    raise NotImplementedError
+    entropy = 0
+    unique_items, counts = unique(classifications)
+    total = sum(counts)
+    for count in counts:
+        probability = count / total
+        entropy += probability * math.log2(probability)
+    return -entropy
 
 
 ##################################################
@@ -60,7 +67,14 @@ def calc_entropy(classifications):
 # - It may be a good idea to look up dictionary methods
 
 def calc_information_gain(parent_classifications, classifications_by_val, val_freqs):
-    raise NotImplementedError
+    information_gain = 0
+    total = sum(val_freqs.values())
+    for val in classifications_by_val:
+        child_entropy = calc_entropy(classifications_by_val[val])
+        probability = val_freqs[val] / total
+        information_gain += probability * child_entropy
+    parent_entropy = calc_entropy(parent_classifications)
+    return parent_entropy - information_gain
 
 
 ##################################################
@@ -124,7 +138,12 @@ class Node:
     # a point is a dictionary of each attribute for the point mapped to the attribute's value
 
     def classify_point(self, point):
-        raise NotImplementedError
+        if self.classification is not None:
+            return self.classification
+        value = point[self.attribute]
+        if value in self.children:
+            return self.children[value].classify_point(point)
+        return self.children[OTHER].classify_point(point)
 
 
     ##################################################
@@ -200,20 +219,24 @@ class KNN_Classifier:
     def __init__(self, k):
         self.k = k
 
+    # TODO: Implement calc_euclidean_distance
     ##################################################
     # Problem 3a - Euclidean Distance
     ##################################################
     # Objective: Return the euclidean distance distance between two points
     def calc_euclidean_distance(self, point_a, point_b):
-        raise NotImplementedError
+        return math.sqrt(sum([(point_a[i] - point_b[i]) ** 2 for i in range(len(point_a))]))
 
+    # TODO: Implement get_top_label
     ##################################################
     # Problem 3b - Pick Label
     ##################################################
     # Objective: Choose the most frequent label out of the labels for the k nearest neighbors
     def get_top_label(self, top_k_labels):
-        raise NotImplementedError
+        unique_labels, label_counts = unique(top_k_labels)
+        return unique_labels[np.argmax(label_counts)]
 
+    # TODO: Implement classify_point
     ##################################################
     # Problem 3c- Classify
     ##################################################
@@ -223,4 +246,8 @@ class KNN_Classifier:
     #  - sample points and sample_labels correspond with each other
     #  - you may find heappush/pop to be useful to keep track of the k closet neighbors here
     def classify_point(self, point, training_points, training_labels):
-        raise NotImplementedError
+        distances = []
+        for i in range(len(training_points)):
+            distances.append((self.calc_euclidean_distance(point, training_points[i]), training_labels[i]))
+        distances.sort(key=lambda x: x[0])
+        return self.get_top_label([x[1] for x in distances[:self.k]])
