@@ -219,7 +219,6 @@ class KNN_Classifier:
     def __init__(self, k):
         self.k = k
 
-    # TODO: Implement calc_euclidean_distance
     ##################################################
     # Problem 3a - Euclidean Distance
     ##################################################
@@ -227,7 +226,6 @@ class KNN_Classifier:
     def calc_euclidean_distance(self, point_a, point_b):
         return math.sqrt(sum([(point_a[i] - point_b[i]) ** 2 for i in range(len(point_a))]))
 
-    # TODO: Implement get_top_label
     ##################################################
     # Problem 3b - Pick Label
     ##################################################
@@ -236,7 +234,6 @@ class KNN_Classifier:
         unique_labels, label_counts = unique(top_k_labels)
         return unique_labels[np.argmax(label_counts)]
 
-    # TODO: Implement classify_point
     ##################################################
     # Problem 3c- Classify
     ##################################################
