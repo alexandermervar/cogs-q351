@@ -60,8 +60,8 @@ if __name__ == "__main__":
     # p2 = RandomPlayer()
     # p2 = ManualPlayer()
     # p2 = PlayerMM(6)
-    # p2 = PlayerAB(6)
-    p2 = PlayerDP(6)
+    p2 = PlayerAB(6)
+    # p2 = PlayerDP(6)
 
     # Create the game instance using the
     # board and players you've made.
